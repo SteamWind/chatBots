@@ -1,7 +1,7 @@
 MiaouBot
 ========
 
-Bot programmed to work on (Miaou chat)[http://dystroy.org/miaou]
+Bot programmed to work on [Miaou chat](http://dystroy.org/miaou)
 
 Commands
 --------
