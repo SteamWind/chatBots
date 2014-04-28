@@ -16,3 +16,6 @@ Write back what you said
 
 ####flip
 Put your text upside down
+
+####yoda
+Modify the order of the words in each sentences and make you wiser (or dumber)

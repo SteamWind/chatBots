@@ -85,19 +85,19 @@ var flipTable = {
     "\u2045": "\u2046"
 };
 
-var code = function(){
+var code = function () {
 
     if (!miaou || !miaou.chat) return;
 
-    var IAmPingedRegex = new RegExp('@'+me.name+'(\\b|$)');
+    var IAmPingedRegex = new RegExp('@' + me.name + '(\\b|$)');
     // when a message comes in, let's handle it
-    miaou.chat.on('incoming_message', function(m){
+    miaou.chat.on('incoming_message', function (m) {
         if (!(m.created > miaou.chat.enterTime)) return; // we only handle new messages
-        if (IAmPingedRegex.test(m.content) && m.author!==me.id) {
+        if (IAmPingedRegex.test(m.content) && m.author !== me.id) {
             // we've been pinged, let's pong, maybe
-            var delay = 5000*Math.random();
-            if (delay > 2000) setTimeout(function(){
-                miaou.chat.sendMessage("@"+m.authorname+"#"+m.id+" "+(~m.content.indexOf("pong") ? "ping" : "pong!"));
+            var delay = 5000 * Math.random();
+            if (delay > 2000) setTimeout(function () {
+                miaou.chat.sendMessage("@" + m.authorname + "#" + m.id + " " + (~m.content.indexOf("pong") ? "ping" : "pong!"));
             }, delay);
         } else if (/^echo [^\n]+$/.test(m.content)) {
             // somebody wants us to repeat, let's do it
@@ -105,14 +105,16 @@ var code = function(){
         }
     });
 
-    var deco = ['','*','**','---','`',' '];
+    var deco = ['', '*', '**', '***', '---', '`', ' '];
     // when a message is sent by the host user, let's make it prettier
-    miaou.chat.on('sending_message', function(m){
+    miaou.chat.on('sending_message', function (m) {
         if (/^[\-*`]*flip[\-*`]* [^\n`*\/]*$/.test(m.content)) {
             m.content = flipString(m.content.slice("flip ".length));
+        } else if (/^[\-*`]*yoda[\-*`]* [^\n`*\/]*$/.test(m.content)) {
+            m.content = yoda(m.content.slice("yoda ".length));
         } else if (/^\w[^\n`*\/]*$/.test(m.content)) {
-            m.content = m.content.split(' ').map(function(t, b){
-                return b = deco[~~(Math.random()*deco.length)], b+t+b;
+            m.content = m.content.split(' ').map(function (t, b) {
+                return b = deco[~~(Math.random() * deco.length)], b + t + b;
             }).join(' ');
         }
     });
@@ -122,18 +124,40 @@ var code = function(){
 
 var script = document.createElement('script');
 script.textContent = '(' + code + ')()';
-(document.head||document.documentElement).appendChild(script);
+(document.head || document.documentElement).appendChild(script);
 script.parentNode.removeChild(script);
 
 
 function flipString(aString) {
-//    aString = aString.toLowerCase();
     var last = aString.length - 1;
     var result = "";
     for (var i = last; i >= 0; --i) {
-        result += !!flipTable[aString.charAt(i)]?flipTable[aString.charAt(i)]:aString.charAt(i)
+        result += !!flipTable[aString.charAt(i)] ? flipTable[aString.charAt(i)] : aString.charAt(i)
     }
     return result;
 }
 
-
+function yoda(aString) {
+    String.prototype.splice = function (idx, rem, s) {
+        return (this.slice(0, idx) + s + this.slice(idx + Math.abs(rem)));
+    };
+    var stringSentences = "";
+    var arraySentences = aString.split(/[.?!]/).filter(Boolean);
+    var tableChar = [];
+    [].forEach.call(aString, function (v, i) {
+        if (/[.?!]/.test(v)) tableChar.push({"index": i, "char": v})
+    });
+    arraySentences.forEach(function (sentence) {
+        sentence = sentence.split(" ").sort(function () {
+            return Math.random() < 0.5
+        }).join(" ");
+        sentence = sentence.toLowerCase();
+        sentence = sentence.charAt(0).toUpperCase() + sentence.substring(1);
+        stringSentences = stringSentences + sentence;
+    });
+    tableChar.forEach(function (entry) {
+        stringSentences = stringSentences.splice(entry["index"], 0, entry["char"]);
+    });
+    console.log(stringSentences);
+    return stringSentences;
+}
