@@ -140,7 +140,7 @@ var code = function () {
             afkMessage = "";
             afk = false;
             console.log("Back from AFK");
-            m.message("I'm back.");
+            m.content = "I'm back.";
         } else if (/^[\-*`]*fancy[\-*`]*/.test(m.content)) {
             fancy = !fancy;
             var fancyActivated = fancy ? "activated" : "disabled";
