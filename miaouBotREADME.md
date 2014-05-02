@@ -12,7 +12,10 @@ Exemple:
 `echo Roses are red`
 
 ####echo
-Write back what you said
+Write back what you said (this option probably would disappear)
+
+####status
+List you the options which options are activated or not.
 
 ####afk [message]
 If you write afk with a message, it would ping back the person who ping you and deliver the message you setted.

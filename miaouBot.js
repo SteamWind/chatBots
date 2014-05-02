@@ -90,6 +90,11 @@ var pingBack = false;
 var afk = false;
 var afkMessage = "";
 
+var botMessage = function (message) {
+    miaou.notify(this.room, "MiaouBot", message);
+    console.info("MiaouBot Message: " + message);
+};
+
 var code = function () {
 
     if (!miaou || !miaou.chat) return;
@@ -98,7 +103,7 @@ var code = function () {
     var IAmPingedRegex = new RegExp('@' + me.name + '(\\b|$)');
     // when a message comes in, let's handle it
     miaou.chat.on('incoming_message', function (m) {
-        if (!(m.created > miaou.chat.enterTime)) return; // we only handle new messages
+        if (m.created <= miaou.chat.enterTime) return; // we only handle new messages
         if (IAmPingedRegex.test(m.content) && m.author !== me.id && pingBack) {
             // we've been pinged, let's pong, maybe
             var delay = 5000 * Math.random();
@@ -118,9 +123,9 @@ var code = function () {
     miaou.chat.on('sending_message', function (m) {
         if (/!@all/.test(m.content)) {
             var allUserArray = $('#users .user').map(function () {
-                return $(this).data('user').name
+                return $(this).data('user').name;
             }).get().filter(function (n) {
-                    return n !== me.name
+                    return n !== me.name;
             });
             allUserArray.forEach(function (user, index) {
                 allUserArray[index] = "@" + user;
@@ -135,23 +140,28 @@ var code = function () {
         } else if (/^[\-*`]*afk[\-*`]* [^\n`*\/]*$/.test(m.content)) {
             afkMessage = m.content.slice("afk ".length);
             afk = true;
-            console.log("AFK: " + afkMessage);
+            botMessage("AFK: " + afkMessage);
         } else if (/^[\-*`]*afk[\-*`]*/.test(m.content)) {
             afkMessage = "";
             afk = false;
-            console.log("Back from AFK");
+            botMessage("Back from AFK");
             m.content = "I'm back.";
         } else if (/^[\-*`]*fancy[\-*`]*/.test(m.content)) {
             fancy = !fancy;
             var fancyActivated = fancy ? "activated" : "disabled";
-            console.log("Fancy mode " + fancyActivated);
-            alert("Fancy mode " + fancyActivated);
+            botMessage("Fancy mode " + fancyActivated);
             return false;
         } else if (/^[\-*`]*pingback[\-*`]*/.test(m.content)) {
             pingBack = !pingBack;
             var pingBackActivated = pingBack ? "activated" : "disabled";
-            console.log("PingBack mode " + pingBackActivated);
-            alert("PingBack mode " + pingBackActivated);
+            botMessage("PingBack mode " + pingBackActivated);
+            return false;
+        } else if (/^[\-*`]*status[\-*`]*/.test(m.content)) {
+            var message;
+            message = "Fancy mode " + (fancy?"activated":"disabled");
+            message = message + "\nPingBack function " + (pingBack?"activated":"disabled");
+            message = message + "\nYou are " + (afk?"":"not ") + "afk." + (afk?" Message setted to: " + afkMessage:"");
+            botMessage(message);
             return false;
         } else if (/^\w[^\n`*\/]*$/.test(m.content) && fancy) {
             m.content = m.content.split(' ').map(function (t, b) {
@@ -163,7 +173,7 @@ var code = function () {
     });
 
     // Now... Please test your bots in room where you won't disturb everybody ^^
-}
+};
 
 var script = document.createElement('script');
 script.textContent = '(' + code + ')()';
@@ -175,7 +185,7 @@ function flipString(aString) {
     var last = aString.length - 1;
     var result = "";
     for (var i = last; i >= 0; --i) {
-        result += !!flipTable[aString.charAt(i)] ? flipTable[aString.charAt(i)] : aString.charAt(i)
+        result += !!flipTable[aString.charAt(i)] ? flipTable[aString.charAt(i)] : aString.charAt(i);
     }
     return result;
 }
@@ -188,21 +198,21 @@ function yoda(aString) {
     var arraySentences = aString.split(/[.?!]/).filter(Boolean);
     var tableChar = [];
     [].forEach.call(aString, function (v, i) {
-        if (/[.?!]/.test(v)) tableChar.push({"index": i, "char": v})
+        if (/[.?!]/.test(v)) tableChar.push({"index": i, "char": v});
     });
     arraySentences.forEach(function (sentence) {
         sentence = sentence.split(" ").sort(function () {
-            return Math.random() < 0.5
+            return Math.random() < 0.5;
         }).join(" ");
         sentence = sentence.toLowerCase();
         sentence = sentence.charAt(0).toUpperCase() + sentence.substring(1);
         stringSentences = stringSentences + sentence;
     });
     tableChar.forEach(function (entry) {
-        stringSentences = stringSentences.splice(entry["index"], 0, entry["char"]);
+        stringSentences = stringSentences.splice(entry.index, 0, entry.char);
     });
     console.log(stringSentences);
     return stringSentences;
 }
 
-console.info("miaouBot activated!");
+botMessage("miaouBot activated!");
