@@ -3,6 +3,10 @@ MiaouBot
 
 Bot programmed to work on [Miaou chat](http://dystroy.org/miaou)
 
+Run this to launch it:
+
+`(function(){var a=document.createElement("script");a.src="https://raw.githubusercontent.com/SteamWind/chatBots/master/miaouBot.js",document.head.appendChild(a)})()`
+
 Commands
 --------
 To use commands, just write your command and then, if required, arguments.
